@@ -1,14 +1,28 @@
 {
-  "devDependencies": {
-    "vite": "^2.9.12",
-    "vite-plugin-node": "^1.0.0"
+  "name": "interactiveartgenerator",
+  "version": "1.0.0",
+  "description": "An three js project running on a express server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Schorcher5/InteractiveArtGenerator.git"
+  },
+  "author": "Joaquin Cisneros",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Schorcher5/InteractiveArtGenerator/issues"
+  },
+  "homepage": "https://github.com/Schorcher5/InteractiveArtGenerator#readme",
   "dependencies": {
+    "dat.gui": "^0.7.9",
     "ejs": "^3.1.8",
     "express": "^4.18.1",
     "three": "^0.141.0"
   },
-  "scripts": {
-    "dev": "vite"
+  "devDependencies": {
+    "nodemon": "^2.0.16"
   }
 }
