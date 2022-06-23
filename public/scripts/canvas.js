@@ -59,4 +59,29 @@ function render() {
     renderer.render(scene, camera)
 }
 
+const mouse = new THREE.Vector2();
+const intersectionPoint = new THREE.Vector3();
+const planeNormal = new THREE.Vector3();
+const plane = new THREE.Plane();
+const raycaster = new THREE.Raycaster();
+
+
+document.addEventListener('click', (e) => {
+
+  mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY/window.innerHeight) * 2 + 1;
+  planeNormal.copy(camera.position).normalize();
+  plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+  raycaster.setFromCamera(mouse, camera);
+  raycaster.ray.intersectPlane(plane, intersectionPoint);
+
+
+  if(e.ctrlKey){
+      
+      const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
+      scene.add(testSphere);
+      testSphere.position.copy(intersectionPoint);
+  }
+})
+
 animate()
