@@ -1,14 +1,18 @@
 
+// Imports libraries used in the server file
 const express = require('express');
 const path = require('path');
 
 // imports express library, and sets it working directory to the public folder and info collection from the post method
 const app = express();
-app.use(express.static(__dirname + '/public'))
-app.use('/build/', express.static(path.join(__dirname, 'node_modules/three/build')))
-app.use('/jsm/', express.static(path.join(__dirname, 'node_modules/three/examples/jsm')))
-
 app.use(express.urlencoded({extended:true}));
+app.use(express.static(__dirname + '/public'));
+
+// Sets relative paths to retrieve certain files from the node_modules folder
+app.use('/build/', express.static(path.join(__dirname, 'node_modules/three/build')));
+app.use('/jsm/', express.static(path.join(__dirname, 'node_modules/three/examples/jsm')));
+
+
 
 // sets working directory for view engine to views folder
 app.set('view engine', 'ejs');
