@@ -1,86 +1,62 @@
-import * as THREE from 'three';
+import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
+import Stats from '/jsm/libs/stats.module.js'
+import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 
+const scene = new THREE.Scene()
 
-const renderer = new THREE.WebGLRenderer();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+camera.position.z = 2
 
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.shadowMap.enabled = true;
+const renderer = new THREE.WebGLRenderer()
+renderer.setSize(window.innerWidth, window.innerHeight)
+document.body.appendChild(renderer.domElement)
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth/window.innerHeight,
-  0.1,
-  1000
-);
+const controls = new OrbitControls(camera, renderer.domElement)
 
+const geometry = new THREE.BoxGeometry()
+const material = new THREE.MeshBasicMaterial({
+    color: 0x00ff00,
+    wireframe: true,
+})
+const cube = new THREE.Mesh(geometry, material)
+scene.add(cube)
 
+window.addEventListener(
+    'resize',
+    () => {
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        render()
+    },
+    false
+)
 
-const orbit = new OrbitControls(camera, renderer.domElement);
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+const stats = Stats()
+document.body.appendChild(stats.dom)
 
-camera.position.set(-10,30,30);
-orbit.update();
+const gui = new GUI()
+const cubeFolder = gui.addFolder('Cube')
+cubeFolder.add(cube.scale, 'x', -5, 5)
+cubeFolder.add(cube.scale, 'y', -5, 5)
+cubeFolder.add(cube.scale, 'z', -5, 5)
+cubeFolder.open()
+const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(camera.position, 'z', 0, 10)
+cameraFolder.open()
 
-const ambientLight = new THREE.AmbientLight(0x1111111);
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xAAAAAA, 0.8);
-scene.add(directionalLight);
-directionalLight.position.set(30,30,30);
-directionalLight.castShadow = true;
-directionalLight.shadow.camera.bottom = -12;
-
-const directionalLightShadowHelper = new THREE.CameraHelper(directionalLight.shadow.camera);
-scene.add(directionalLightShadowHelper);
-
-const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-scene.add(directionalLightHelper);
-
-const spotlight = new THREE.SpotLight(0xFFFFFF);
-scene.add(spotlight);
-spotlight.position.set(-30,50,0);
-spotlight.castShadow = true;
-
-const spotlightHelper = new THREE.SpotLightHelper(spotlight);
-scene.add(spotlightHelper);
-
-const boxGeometry = new THREE.BoxGeometry();
-const boxMaterial = new THREE.MeshBasicMaterial({color: 0x00FF00});
-const box = new THREE.Mesh(boxGeometry, boxMaterial);
-
-scene.add(box);
-
-const planeGeometry = new THREE.PlaneGeometry(30,30);
-const planeMaterial = new THREE.MeshStandardMaterial({color: 0xFF00FF , side: THREE.DoubleSide});
-const plane = new THREE.Mesh(planeGeometry,planeMaterial);
-plane.receiveShadow = true;
-
-scene.add(plane);
-plane.rotation.x = -0.5*Math.PI;
-
-const gridHelper = new THREE.GridHelper(30);
-scene.add(gridHelper);
-
-const sphereGeometry = new THREE.SphereGeometry(3 , 30, 30);
-const sphereMaterial = new THREE.MeshLambertMaterial();
-const sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
-scene.add(sphere);
-sphere.castShadow = true;
-
-sphere.position.set(10,10,10);
-let step = 0;
-
-
-function animate(time) {
-  box.rotation.y = time/100;
-  box.rotation.x = time/100;
-
-
+function animate() {
+    requestAnimationFrame(animate)
+    cube.rotation.x += 0.01
+    cube.rotation.y += 0.01
+    controls.update()
+    render()
+    stats.update()
 }
 
-renderer.setAnimationLoop(animate);
+function render() {
+    renderer.render(scene, camera)
+}
 
-document.body.appendChild(renderer.domElement);
+animate()
