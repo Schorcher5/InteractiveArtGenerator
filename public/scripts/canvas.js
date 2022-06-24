@@ -116,7 +116,7 @@ document.addEventListener('click', (e) => {
   //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
-  //e.ctrlKey returns true when ctrl is held
+  //e.shiftKey returns true when shift is held
   if(e.shiftKey){
       
       //Sets new Mesh at the mouse cursor location
