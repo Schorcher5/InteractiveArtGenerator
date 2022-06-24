@@ -117,7 +117,7 @@ document.addEventListener('click', (e) => {
   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
   //e.ctrlKey returns true when ctrl is held
-  if(e.ctrlKey){
+  if(e.shiftKey){
       
       //Sets new Mesh at the mouse cursor location
       const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
