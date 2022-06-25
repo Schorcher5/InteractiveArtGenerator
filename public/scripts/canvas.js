@@ -4,19 +4,26 @@
 
 import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
+import { RGBELoader } from '/jsm/loaders/RGBELoader.js'
+import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
-
-
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
 
 
+// const light = new THREE.PointLight(0xffffff, 2)
+// light.position.set(10, 10, 10)
+// scene.add(light)
+
+const light = new THREE.AmbientLight(0x404040);
+scene.add(light);
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.z = 2
+camera.position.z = 2;
 
 //Sets up our render engine/library and adds it to the dom
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
@@ -98,33 +105,59 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+// const pointlight = new THREE.PointLight(0xffffff, 1);
+// camera.position.set(200, 200, 200);
+// scene.add(pointlight);
+
+
 // Function to handle events preformed by mouse clicking
 
 document.addEventListener('click', (e) => {
 
-  // Sets current mouse position as the vector points of the mouse object
-  mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY/window.innerHeight) * 2 + 1;
+    // Sets current mouse position as the vector points of the mouse object
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-  //sets up the direction of the plane
-  planeNormal.copy(camera.position).normalize();
-  
-  //Sets up our invisible plane that will fave the camera at the scene position(its origin)
-  plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
-  raycaster.setFromCamera(mouse, camera);
-  
-  //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
-  raycaster.ray.intersectPlane(plane, intersectionPoint);
+    //sets up the direction of the plane
+    planeNormal.copy(camera.position).normalize();
 
-  //e.shiftKey returns true when shift is held
-  if(e.shiftKey){
-      
-      //Sets new Mesh at the mouse cursor location
-      const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
-      scene.add(testSphere);
-      testSphere.position.copy(intersectionPoint);
-  }
+    //Sets up our invisible plane that will fave the camera at the scene position(its origin)
+    plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+    raycaster.setFromCamera(mouse, camera);
+
+    //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
+    raycaster.ray.intersectPlane(plane, intersectionPoint);
+
+    //e.shiftKey returns true when shift is held
+    if (e.shiftKey) {
+
+
+        let texture = new THREE.CanvasTexture(new FlakesTexture());
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.x = 10;
+        texture.repeat.y = 6;
+
+        const ballMaterial = {
+            opacity: 1,
+            reflectivity: 0.29,
+            transmission: 0.5,
+            clearcoat: 0.45,
+            clearcoatRoughness: 0.25,
+            metalness: 0.9,
+            roughness: 0.5,
+            color: new THREE.Color(0xe1a4a4),
+            ior: 1.8,
+            normalMap: texture,
+            normalScale: new THREE.Vector2(0.15, 0.15)
+        };
+        // Sets new Mesh at the mouse cursor location
+        const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.100, 30, 30), new THREE.MeshPhysicalMaterial(ballMaterial));
+        scene.add(testSphere);
+
+        // ballMesh.position.copy(intersectionPoint);
+        testSphere.position.copy(intersectionPoint);
+    }
 })
-
 
 animate()
