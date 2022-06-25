@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
+import { RectAreaLight } from 'three'
 
 
 //Creates a scene, where we can load shapes onto
@@ -27,7 +28,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 //a geometry and material object to the mesh constructor
 // Note that geometry and material should be made in the mesh constructor and not stored as separate objects
 const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshPhongMaterial({
+const material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,
     wireframe: true,
 })
@@ -50,9 +51,22 @@ window.addEventListener(
 const stats = Stats()
 document.body.appendChild(stats.dom)
 
+//Lighting to add more realism to the scene and to use better meshes
+const rectWidth = 2.0
+const rectHeight = 20.0
+
+//RectAreaLightUniformsLib.init();
+
+const lightRect = new THREE.RectAreaLight(0xffffff, 10.0, rectWidth, rectHeight)
+lightRect.position.set(0, 6, 0)
+lightRect.lookAt(0,0,0)
+scene.add(lightRect)
+
+// var Light = new THREE.AmbientLight(0x404040)
+// scene.add(Light)
+
 //Sets up a control panel in the top right that allows you to change the start cube's dimensions and camera parameters
 const gui = new GUI()
-
 
 const ShapeAttributesFolder = gui.addFolder('Shape Attributes')
 ShapeAttributesFolder.add(cube.scale, 'x', -5, 5)
@@ -67,10 +81,6 @@ cameraFolder.open()
 
 const LightFolder = gui.addFolder('Light Folder')
 LightFolder.open()
-
-//Lighting to add more realism to the scene and to use better meshes
-var Light = new THREE.AmbientLight(0x404040)
-scene.add(Light)
 
 
 //This function is special as it will continually run throughout the life of the server,
