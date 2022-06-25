@@ -8,6 +8,8 @@ import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 
 
+const meshArray = [];
+
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
 
@@ -33,6 +35,7 @@ const material = new THREE.MeshBasicMaterial({
 })
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
+meshArray.push(cube);
 
 // Method to handle viewport changes by automatically changing camera dimensions and re-rendering
 window.addEventListener(
@@ -65,13 +68,18 @@ cameraFolder.open()
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
 function animate() {
+
     requestAnimationFrame(animate)
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
-    controls.update()
-    //make sure to always re-render and update the fps counter at the end of an animation
-    render()
-    stats.update()
+    meshArray.forEach((mesh) => {
+        
+        mesh.rotation.x += 0.01
+        mesh.rotation.y += 0.01
+        controls.update()
+        //make sure to always re-render and update the fps counter at the end of an animation
+        render()
+        stats.update()
+    });
+
 }
 
 //Here is where our scene and camera get loaded into the browser
@@ -123,6 +131,7 @@ document.addEventListener('click', (e) => {
       const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
       scene.add(testSphere);
       testSphere.position.copy(intersectionPoint);
+      meshArray.push(testSphere);
   }
 })
 
