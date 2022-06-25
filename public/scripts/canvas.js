@@ -148,5 +148,9 @@ function onDragEvent(e) {
     e.object.position.set(intersects.x, intersects.y, intersects.z);
   }
 */
+// examples
+// https://jsfiddle.net/amitlzkpa/c53w8erf/
+// https://jsfiddle.net/xa9uscme/1/
+
 
 animate()
