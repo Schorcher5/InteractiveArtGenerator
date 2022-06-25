@@ -30,7 +30,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 const geometry = new THREE.BoxGeometry()
 const material = new THREE.MeshStandardMaterial({
     color: 	0xfff7e2,
-    wireframe: true,
+    wireframe: false,
 })
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
@@ -66,6 +66,22 @@ scene.add(lightAmbient)
 //Sets up a control panel in the top right that allows you to change the start cube's dimensions and camera parameters
 const gui = new GUI()
 
+// add a string controller for shape spawner
+var shapeSelector = { 
+  shape: "Box"
+};
+
+const shapeSelectorFolder = gui.addFolder("Shape?")
+shapeSelectorFolder.add(shapeSelector, 'shape', {
+  Box: "box",
+  Cone: "cone",
+  Cylinder: "cylinder",
+  Torus: "torus",
+  Sphere: "sphere"
+})
+.onChange(newValue => {switchElement(newValue)})
+.name("shape?")
+
 const ShapeAttributesFolder = gui.addFolder('Shape Attributes')
 ShapeAttributesFolder.add(cube.scale, 'x', -5, 5)
 ShapeAttributesFolder.add(cube.scale, 'y', -5, 5)
@@ -74,12 +90,10 @@ ShapeAttributesFolder.add(cube.material, 'wireframe')
 ShapeAttributesFolder.open()
 
 const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(camera.position, 'x', 0, 10)
+cameraFolder.add(camera.position, 'y', 0, 10)
 cameraFolder.add(camera.position, 'z', 0, 10)
 cameraFolder.open()
-
-// const materialParams = {
-//   boxMeshColor: cube.material.color.getHex()
-// }
 
 const LightFolder = gui.addFolder('Light Folder')
 LightFolder.add(lightAmbient, 'intensity', 0, 10).name('Ambient Intensity')
@@ -88,6 +102,7 @@ LightFolder.add(lightRect.position, 'x', -5, 10).name('Rect Light x')
 LightFolder.add(lightRect.position, 'y', -5, 10).name('Rect Light y')
 LightFolder.add(lightRect.position, 'z', -5, 10).name('Rect Light z')
 LightFolder.add(lightRect, 'intensity', 0, 10).name('Rect Intensity')
+LightFolder.addColor(lightRect, 'color').name('Rect Color')
 LightFolder.open()
 
 //This function is special as it will continually run throughout the life of the server,
@@ -127,7 +142,6 @@ const plane = new THREE.Plane();
 const raycaster = new THREE.Raycaster();
 
 // Function to handle events preformed by mouse clicking
-
 document.addEventListener('click', (e) => {
 
   // Sets current mouse position as the vector points of the mouse object
@@ -147,6 +161,28 @@ document.addEventListener('click', (e) => {
   //e.shiftKey returns true when shift is held
   if(e.shiftKey){
       
+    switch (new Date().getDay()) {
+      case 0:
+        day = "Sunday";
+        break;
+      case 1:
+        day = "Monday";
+        break;
+      case 2:
+         day = "Tuesday";
+        break;
+      case 3:
+        day = "Wednesday";
+        break;
+      case 4:
+        day = "Thursday";
+        break;
+      case 5:
+        day = "Friday";
+        break;
+      case 6:
+        day = "Saturday";
+    }
       //Sets new Mesh at the mouse cursor location
       const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
       scene.add(testSphere);

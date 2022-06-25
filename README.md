@@ -27,4 +27,5 @@ In the url of your brower type **localhost:3000** and the project will run
 
 ## Some good resources to turn back to ( :
 * https://codepen.io/prisoner849/pen/KrmvMZ
+* https://www.youtube.com/watch?v=By9qRmcrTzs
 * 
