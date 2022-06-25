@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
+import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
 
 
 //Creates a scene, where we can load shapes onto
@@ -14,6 +15,10 @@ const scene = new THREE.Scene()
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
 camera.position.z = 2
+
+// grid
+var gridHelper = new THREE.GridHelper( 10, 10 );
+scene.add( gridHelper );
 
 //Sets up our render engine/library and adds it to the dom
 const renderer = new THREE.WebGLRenderer()
@@ -34,6 +39,9 @@ const material = new THREE.MeshBasicMaterial({
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
 
+
+
+
 // Method to handle viewport changes by automatically changing camera dimensions and re-rendering
 window.addEventListener(
     'resize',
@@ -45,6 +53,7 @@ window.addEventListener(
     },
     false
 )
+
 
 //Sets up an fps counter at the top left
 const stats = Stats()
@@ -66,8 +75,8 @@ cameraFolder.open()
 //looping through all its code allowing for basic animations through changing mesh parameters
 function animate() {
     requestAnimationFrame(animate)
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
+    cube.rotation.x += 0.001
+    cube.rotation.y += 0.001
     controls.update()
     //make sure to always re-render and update the fps counter at the end of an animation
     render()
@@ -123,8 +132,21 @@ document.addEventListener('click', (e) => {
       const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
       scene.add(testSphere);
       testSphere.position.copy(intersectionPoint);
-  }
-})
+  } 
 
+})
+/*
+const dragControls = new DragControls( objects, camera, renderer.domElement );
+		dragControls.addEventListener( 'dragstart', function () { orbitControls.enabled = false; } );
+    dragControls.addEventListener( 'drag', onDragEvent );
+		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
+        
+
+function onDragEvent(e) {
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(plane, intersects);
+    e.object.position.set(intersects.x, intersects.y, intersects.z);
+  }
+*/
 
 animate()
