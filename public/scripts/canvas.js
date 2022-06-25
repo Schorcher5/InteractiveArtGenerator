@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
-import { RectAreaLight } from 'three'
+import { AmbientLight, Light, RectAreaLight } from 'three'
 
 
 //Creates a scene, where we can load shapes onto
@@ -52,18 +52,16 @@ const stats = Stats()
 document.body.appendChild(stats.dom)
 
 //Lighting to add more realism to the scene and to use better meshes
-const rectWidth = 2.0
-const rectHeight = 20.0
+var rectWidth = 2.0
+var rectHeight = 20.0
 
-//RectAreaLightUniformsLib.init();
-
-const lightRect = new THREE.RectAreaLight(0xffffff, 10.0, rectWidth, rectHeight)
+const lightRect = new THREE.RectAreaLight(0xffffff, 5.0, rectWidth, rectHeight)
 lightRect.position.set(0, 6, 0)
 lightRect.lookAt(0,0,0)
 scene.add(lightRect)
 
-// var Light = new THREE.AmbientLight(0x404040)
-// scene.add(Light)
+const lightAmbient = new THREE.AmbientLight(0x404040, 2.0)
+scene.add(lightAmbient)
 
 //Sets up a control panel in the top right that allows you to change the start cube's dimensions and camera parameters
 const gui = new GUI()
@@ -72,7 +70,7 @@ const ShapeAttributesFolder = gui.addFolder('Shape Attributes')
 ShapeAttributesFolder.add(cube.scale, 'x', -5, 5)
 ShapeAttributesFolder.add(cube.scale, 'y', -5, 5)
 ShapeAttributesFolder.add(cube.scale, 'z', -5, 5)
-//ShapeAttributesFolder.add(material)
+ShapeAttributesFolder.add(cube.material, 'wireframe')
 ShapeAttributesFolder.open()
 
 const cameraFolder = gui.addFolder('Camera')
@@ -80,8 +78,13 @@ cameraFolder.add(camera.position, 'z', 0, 10)
 cameraFolder.open()
 
 const LightFolder = gui.addFolder('Light Folder')
+LightFolder.add(lightAmbient, 'intensity', 0, 10).name('Ambient Intensity')
+//LightFolder.add(lightAmbient, 'color', 0x404040).name('Ambient Color')
+LightFolder.add(lightRect.position, 'x', -5, 10).name('Rect Light x')
+LightFolder.add(lightRect.position, 'y', -5, 10).name('Rect Light y')
+LightFolder.add(lightRect.position, 'z', -5, 10).name('Rect Light z')
+LightFolder.add(lightRect, 'intensity', 0, 10).name('Rect Intensity')
 LightFolder.open()
-
 
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
