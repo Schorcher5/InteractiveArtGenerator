@@ -29,7 +29,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 // Note that geometry and material should be made in the mesh constructor and not stored as separate objects
 const geometry = new THREE.BoxGeometry()
 const material = new THREE.MeshStandardMaterial({
-    color: 0x00ff00,
+    color: 	0xfff7e2,
     wireframe: true,
 })
 const cube = new THREE.Mesh(geometry, material)
@@ -77,9 +77,13 @@ const cameraFolder = gui.addFolder('Camera')
 cameraFolder.add(camera.position, 'z', 0, 10)
 cameraFolder.open()
 
+// const materialParams = {
+//   boxMeshColor: cube.material.color.getHex()
+// }
+
 const LightFolder = gui.addFolder('Light Folder')
 LightFolder.add(lightAmbient, 'intensity', 0, 10).name('Ambient Intensity')
-//LightFolder.add(lightAmbient, 'color', 0x404040).name('Ambient Color')
+LightFolder.addColor(lightAmbient, 'color').name('Ambient Color')
 LightFolder.add(lightRect.position, 'x', -5, 10).name('Rect Light x')
 LightFolder.add(lightRect.position, 'y', -5, 10).name('Rect Light y')
 LightFolder.add(lightRect.position, 'z', -5, 10).name('Rect Light z')
