@@ -12,21 +12,20 @@ import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 const scene = new THREE.Scene()
 
 
-// const light = new THREE.PointLight(0xffffff, 2)
-// light.position.set(10, 10, 10)
-// scene.add(light)
+const light = new THREE.PointLight(0xfdd8fc, 1)
+light.position.set(0, 0, 50)
+scene.add(light)
 
-const light = new THREE.AmbientLight(0x404040);
-scene.add(light);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.z = 2;
+
 
 //Sets up our render engine/library and adds it to the dom
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+camera.position.z = 2;
 //Makes camera movable when holding the mouse button and dragging
 const controls = new OrbitControls(camera, renderer.domElement)
 
@@ -131,32 +130,38 @@ document.addEventListener('click', (e) => {
     //e.shiftKey returns true when shift is held
     if (e.shiftKey) {
 
+        // let envmaploader = new THREE.PMREMGenerator(renderer);
 
-        let texture = new THREE.CanvasTexture(new FlakesTexture());
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.x = 10;
-        texture.repeat.y = 6;
+        // new RGBELoader().load('cayley_interior_4k.hdr', function (hdrmap) {
+        //     let envmap = envmaploader.fromCubemap(hdrmap);
+        //     let texture = new THREE.CanvasTexture(new FlakesTexture());
+        //     texture.wrapS = THREE.RepeatWrapping;
+        //     texture.wrapT = THREE.RepeatWrapping;
+        //     texture.repeat.x = 10;
+        //     texture.repeat.y = 6;
 
         const ballMaterial = {
-            opacity: 1,
-            reflectivity: 0.29,
-            transmission: 0.5,
-            clearcoat: 0.45,
-            clearcoatRoughness: 0.25,
-            metalness: 0.9,
-            roughness: 0.5,
-            color: new THREE.Color(0xe1a4a4),
-            ior: 1.8,
-            normalMap: texture,
-            normalScale: new THREE.Vector2(0.15, 0.15)
+            color: new THREE.Color(0xfdd8fc),
+            emissive: new THREE.Color(0x000000),
+            roughness: 0.466,
+            metalness: 0.1,
+            reflectivity: 0.288,
+            clearcoat: 0.86,
+            clearcoatRoughness: 0.39,
+            fog: true,
+            // envMap: envmap.texture
         };
+
         // Sets new Mesh at the mouse cursor location
         const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.100, 30, 30), new THREE.MeshPhysicalMaterial(ballMaterial));
         scene.add(testSphere);
 
-        // ballMesh.position.copy(intersectionPoint);
         testSphere.position.copy(intersectionPoint);
+        // });
+
+
+        // ballMesh.position.copy(intersectionPoint);
+        // testSphere.position.copy(intersectionPoint);
     }
 })
 
