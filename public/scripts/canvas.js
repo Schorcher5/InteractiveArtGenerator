@@ -132,8 +132,8 @@ function animate() {
             
         });
     }
-    for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
-        if(drawLine){
+    if(drawLine){
+      for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
             const waveModifier = Math.random();
             for(var i = 0; i<4; i++){
                 const particle = new THREE.Points(new THREE.SphereGeometry(0.005,1,1), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*100}));
@@ -143,7 +143,7 @@ function animate() {
                 particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
                 particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
         
-            }console.log("test");
+            }console.log(drawLine);
         }
     }
   
