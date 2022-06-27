@@ -35,9 +35,9 @@ const controls = new OrbitControls(camera, renderer.domElement)
 // new
 
 const dragControls = new DragControls( objects, camera, renderer.domElement );
-		dragControls.addEventListener( 'dragstart', function () { orbitControls.enabled = false; } );
+		dragControls.addEventListener( 'dragstart', function () { controls.enabled = false; } );
     dragControls.addEventListener( 'drag', onDragEvent );
-		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
+		dragControls.addEventListener( 'dragend', function () { controls.enabled = true; } );
         
 
 
