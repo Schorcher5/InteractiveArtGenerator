@@ -8,6 +8,7 @@ import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
 
+var objects = []
 
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
@@ -25,8 +26,20 @@ const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
+// new
+window.addEventListener( 'mousemove', onMouseMove, false );
+
 //Makes camera movable when holding the mouse button and dragging
 const controls = new OrbitControls(camera, renderer.domElement)
+
+// new
+
+const dragControls = new DragControls( objects, camera, renderer.domElement );
+		dragControls.addEventListener( 'dragstart', function () { orbitControls.enabled = false; } );
+    dragControls.addEventListener( 'drag', onDragEvent );
+		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
+        
+
 
 //Sets up and adds a basic shape which is known as a mesh in three.js by passing
 //a geometry and material object to the mesh constructor
@@ -38,6 +51,7 @@ const material = new THREE.MeshBasicMaterial({
 })
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
+objects.push(cube)
 
 
 
@@ -131,23 +145,26 @@ document.addEventListener('click', (e) => {
       //Sets new Mesh at the mouse cursor location
       const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
       scene.add(testSphere);
+      objects.push(testSphere);
       testSphere.position.copy(intersectionPoint);
   } 
 
 })
-/*
-const dragControls = new DragControls( objects, camera, renderer.domElement );
-		dragControls.addEventListener( 'dragstart', function () { orbitControls.enabled = false; } );
-    dragControls.addEventListener( 'drag', onDragEvent );
-		dragControls.addEventListener( 'dragend', function () { orbitControls.enabled = true; } );
-        
+
+
+
+function onMouseMove(e) {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  }
+
 
 function onDragEvent(e) {
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(plane, intersects);
     e.object.position.set(intersects.x, intersects.y, intersects.z);
   }
-*/
+
 // examples
 // https://jsfiddle.net/amitlzkpa/c53w8erf/
 // https://jsfiddle.net/xa9uscme/1/
