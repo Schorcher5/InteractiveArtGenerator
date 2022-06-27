@@ -68,7 +68,7 @@ const gui = new GUI()
 
 // add a string controller for shape spawner
 var shapeSelector = { 
-  "shape": "Box"
+  "shape": "box"
 };
 
 const shapeSelectorFolder = gui.addFolder("Shape?")
@@ -161,25 +161,30 @@ document.addEventListener('click', (e) => {
   if(e.shiftKey){ 
     switch (shapeSelector.shape) {
       case "box":
-        const testBox = new THREE.Mesh( new THREE.BoxGeometry(1,1,1) , new THREE.MeshBasicMaterial({color:0xFFFFFF}));
+        const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
         scene.add(testBox);
         testBox.position.copy(intersectionPoint)
         break;
       case "cone":
-        
+        const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
+        scene.add(testCone);
+        testCone.position.copy(intersectionPoint);
         break;
       case "cylinder":
-         
+        const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
+        scene.add(testCylinder);
+        testCylinder.position.copy(intersectionPoint);
         break;
       case "torus":
-        
+        const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshBasicMaterial({ color: 0xFFFFFF }) );
+        scene.add(testTorus);
+        testTorus.position.copy(intersectionPoint)
         break;
       case "sphere":
         //Sets new Mesh at the mouse cursor location
-        const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
+        const testSphere = new THREE.Mesh( new THREE.SphereGeometry(0.125,30,30) , new THREE.MeshBasicMaterial( {color: 0xFFFFFF} ) );
         scene.add(testSphere);
         testSphere.position.copy(intersectionPoint);        
-        
     }
   }
 })
