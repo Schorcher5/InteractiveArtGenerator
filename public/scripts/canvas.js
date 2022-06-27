@@ -4,23 +4,30 @@
 
 import * as THREE from 'three'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
+import { RGBELoader } from '/jsm/loaders/RGBELoader.js'
+import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { AmbientLight, Light, RectAreaLight } from 'three'
-
 
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
 
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.z = 2
+const light = new THREE.PointLight(0xfdd8fc, 1)
+light.position.set(0, 0, 50)
+scene.add(light)
+
+
+
 
 //Sets up our render engine/library and adds it to the dom
-const renderer = new THREE.WebGLRenderer()
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+camera.position.z = 2;
 //Makes camera movable when holding the mouse button and dragging
 const controls = new OrbitControls(camera, renderer.domElement)
 
@@ -140,6 +147,11 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+// const pointlight = new THREE.PointLight(0xffffff, 1);
+// camera.position.set(200, 200, 200);
+// scene.add(pointlight);
+
+
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
 
@@ -159,30 +171,53 @@ document.addEventListener('click', (e) => {
 
   //e.shiftKey returns true when shift is held
   if(e.shiftKey){ 
+  
+     // let envmaploader = new THREE.PMREMGenerator(renderer);
+
+        // new RGBELoader().load('cayley_interior_4k.hdr', function (hdrmap) {
+        //     let envmap = envmaploader.fromCubemap(hdrmap);
+        //     let texture = new THREE.CanvasTexture(new FlakesTexture());
+        //     texture.wrapS = THREE.RepeatWrapping;
+        //     texture.wrapT = THREE.RepeatWrapping;
+        //     texture.repeat.x = 10;
+        //     texture.repeat.y = 6;
+
+        const ballMaterial = {
+            color: new THREE.Color(0xfdd8fc),
+            emissive: new THREE.Color(0x000000),
+            roughness: 0.466,
+            metalness: 0.1,
+            reflectivity: 0.288,
+            clearcoat: 0.86,
+            clearcoatRoughness: 0.39,
+            fog: true,
+            // envMap: envmap.texture
+        };
+        
     switch (shapeSelector.shape) {
       case "box":
-        const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
+        const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testBox);
         testBox.position.copy(intersectionPoint)
         break;
       case "cone":
-        const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
+        const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCone);
         testCone.position.copy(intersectionPoint);
         break;
       case "cylinder":
-        const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshBasicMaterial({color:0xFFFFFF}) );
+        const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCylinder);
         testCylinder.position.copy(intersectionPoint);
         break;
       case "torus":
-        const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshBasicMaterial({ color: 0xFFFFFF }) );
+        const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testTorus);
         testTorus.position.copy(intersectionPoint)
         break;
       case "sphere":
         //Sets new Mesh at the mouse cursor location
-        const testSphere = new THREE.Mesh( new THREE.SphereGeometry(0.125,30,30) , new THREE.MeshBasicMaterial( {color: 0xFFFFFF} ) );
+        const testSphere = new THREE.Mesh( new THREE.SphereGeometry(0.125,30,30) , new THREE.MeshPhysicalMaterial( ballMaterial ) );
         scene.add(testSphere);
         testSphere.position.copy(intersectionPoint);        
     }
