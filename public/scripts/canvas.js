@@ -91,8 +91,8 @@ function animate() {
                
                 scene.add(particle);
                 particle.position.copy(intersectionPoint);
-                particle.position.z = particle.position.z + 1 * waveModifier * (i >= 2 ? -1:1) *0.09;
-                particle.position.x = particle.position.x + 1 * waveModifier * (i < 2 ? -1:1) * 0.09;
+                particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
+                particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
         
             }
         }
