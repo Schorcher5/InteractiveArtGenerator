@@ -261,6 +261,6 @@ document.addEventListener('click', (e) => {
     drawLine = false;
   
   numberOfDraws = 0;
-})
+}})
 
 animate()
