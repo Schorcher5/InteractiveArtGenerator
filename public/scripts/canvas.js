@@ -68,7 +68,7 @@ const gui = new GUI()
 
 // add a string controller for shape spawner
 var shapeSelector = { 
-  shape: "Box"
+  "shape": "Box"
 };
 
 const shapeSelectorFolder = gui.addFolder("Shape?")
@@ -79,7 +79,6 @@ shapeSelectorFolder.add(shapeSelector, 'shape', {
   Torus: "torus",
   Sphere: "sphere"
 })
-.onChange(newValue => {switchElement(newValue)})
 .name("shape?")
 
 const ShapeAttributesFolder = gui.addFolder('Shape Attributes')
@@ -160,35 +159,34 @@ document.addEventListener('click', (e) => {
 
   //e.shiftKey returns true when shift is held
   if(e.shiftKey){
-      
-    switch (new Date().getDay()) {
-      case 0:
-        day = "Sunday";
+
+    // Box: "box",
+    // Cone: "cone",
+    // Cylinder: "cylinder",
+    // Torus: "torus",
+    // Sphere: "sphere"
+    // 
+    switch (shapeSelector.shape) {
+      case "box":
+        
         break;
-      case 1:
-        day = "Monday";
+      case "cone":
+        
         break;
-      case 2:
-         day = "Tuesday";
+      case "cylinder":
+         
         break;
-      case 3:
-        day = "Wednesday";
+      case "torus":
+        
         break;
-      case 4:
-        day = "Thursday";
-        break;
-      case 5:
-        day = "Friday";
-        break;
-      case 6:
-        day = "Saturday";
+      case "sphere":
+        //Sets new Mesh at the mouse cursor location
+        const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
+        scene.add(testSphere);
+        testSphere.position.copy(intersectionPoint);        
+        
     }
-      //Sets new Mesh at the mouse cursor location
-      const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.125,30,30), new THREE.MeshBasicMaterial({color: 0xFFFFFF}));
-      scene.add(testSphere);
-      testSphere.position.copy(intersectionPoint);
   }
 })
-
 
 animate()
