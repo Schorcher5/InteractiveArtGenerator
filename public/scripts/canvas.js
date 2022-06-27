@@ -158,17 +158,12 @@ document.addEventListener('click', (e) => {
   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
   //e.shiftKey returns true when shift is held
-  if(e.shiftKey){
-
-    // Box: "box",
-    // Cone: "cone",
-    // Cylinder: "cylinder",
-    // Torus: "torus",
-    // Sphere: "sphere"
-    // 
+  if(e.shiftKey){ 
     switch (shapeSelector.shape) {
       case "box":
-        
+        const testBox = new THREE.Mesh( new THREE.BoxGeometry(1,1,1) , new THREE.MeshBasicMaterial({color:0xFFFFFF}));
+        scene.add(testBox);
+        testBox.position.copy(intersectionPoint)
         break;
       case "cone":
         
