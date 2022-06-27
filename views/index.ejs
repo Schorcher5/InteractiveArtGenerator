@@ -4,5 +4,10 @@
 
 <body>
     <%- include("./partials/navbar.ejs")%>
+    <div style="text-align: center; z-index: 10; position: absolute; bottom: 0; right: 0;">
+        <input type="checkbox" id="rotation" name="rotation" value="Rotate">
+        <label for="rotation">Enable Rotation</label>
+    </div>
+    
     <script type="module" src="/scripts/canvas.js"></script>    
 <%- include("./partials/navbar.ejs")%>
