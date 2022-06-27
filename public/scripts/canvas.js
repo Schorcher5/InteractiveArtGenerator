@@ -8,6 +8,8 @@ import { RGBELoader } from '/jsm/loaders/RGBELoader.js'
 import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
+import { AmbientLight, Light, RectAreaLight } from 'three'
+
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
 
@@ -33,9 +35,9 @@ const controls = new OrbitControls(camera, renderer.domElement)
 //a geometry and material object to the mesh constructor
 // Note that geometry and material should be made in the mesh constructor and not stored as separate objects
 const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshBasicMaterial({
-    color: 0x00ff00,
-    wireframe: true,
+const material = new THREE.MeshStandardMaterial({
+    color: 	0xfff7e2,
+    wireframe: false,
 })
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
@@ -56,17 +58,58 @@ window.addEventListener(
 const stats = Stats()
 document.body.appendChild(stats.dom)
 
+//Lighting to add more realism to the scene and to use better meshes
+var rectWidth = 2.0
+var rectHeight = 20.0
+
+const lightRect = new THREE.RectAreaLight(0xffffff, 5.0, rectWidth, rectHeight)
+lightRect.position.set(0, 6, 0)
+lightRect.lookAt(0,0,0)
+scene.add(lightRect)
+
+const lightAmbient = new THREE.AmbientLight(0x404040, 2.0)
+scene.add(lightAmbient)
+
 //Sets up a control panel in the top right that allows you to change the start cube's dimensions and camera parameters
 const gui = new GUI()
-const cubeFolder = gui.addFolder('Cube')
-cubeFolder.add(cube.scale, 'x', -5, 5)
-cubeFolder.add(cube.scale, 'y', -5, 5)
-cubeFolder.add(cube.scale, 'z', -5, 5)
-cubeFolder.open()
+
+// add a string controller for shape spawner
+var shapeSelector = { 
+  "shape": "box"
+};
+
+const shapeSelectorFolder = gui.addFolder("Shape?")
+shapeSelectorFolder.add(shapeSelector, 'shape', {
+  Box: "box",
+  Cone: "cone",
+  Cylinder: "cylinder",
+  Torus: "torus",
+  Sphere: "sphere"
+})
+.name("shape?")
+
+const ShapeAttributesFolder = gui.addFolder('Shape Attributes')
+ShapeAttributesFolder.add(cube.scale, 'x', -5, 5)
+ShapeAttributesFolder.add(cube.scale, 'y', -5, 5)
+ShapeAttributesFolder.add(cube.scale, 'z', -5, 5)
+ShapeAttributesFolder.add(cube.material, 'wireframe')
+ShapeAttributesFolder.open()
+
 const cameraFolder = gui.addFolder('Camera')
+cameraFolder.add(camera.position, 'x', 0, 10)
+cameraFolder.add(camera.position, 'y', 0, 10)
 cameraFolder.add(camera.position, 'z', 0, 10)
 cameraFolder.open()
 
+const LightFolder = gui.addFolder('Light Folder')
+LightFolder.add(lightAmbient, 'intensity', 0, 10).name('Ambient Intensity')
+LightFolder.addColor(lightAmbient, 'color').name('Ambient Color')
+LightFolder.add(lightRect.position, 'x', -5, 10).name('Rect Light x')
+LightFolder.add(lightRect.position, 'y', -5, 10).name('Rect Light y')
+LightFolder.add(lightRect.position, 'z', -5, 10).name('Rect Light z')
+LightFolder.add(lightRect, 'intensity', 0, 10).name('Rect Intensity')
+LightFolder.addColor(lightRect, 'color').name('Rect Color')
+LightFolder.open()
 
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
@@ -110,27 +153,26 @@ const raycaster = new THREE.Raycaster();
 
 
 // Function to handle events preformed by mouse clicking
-
 document.addEventListener('click', (e) => {
 
-    // Sets current mouse position as the vector points of the mouse object
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  // Sets current mouse position as the vector points of the mouse object
+  mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY/window.innerHeight) * 2 + 1;
 
-    //sets up the direction of the plane
-    planeNormal.copy(camera.position).normalize();
+  //sets up the direction of the plane
+  planeNormal.copy(camera.position).normalize();
+  
+  //Sets up our invisible plane that will fave the camera at the scene position(its origin)
+  plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+  raycaster.setFromCamera(mouse, camera);
+  
+  //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
+  raycaster.ray.intersectPlane(plane, intersectionPoint);
 
-    //Sets up our invisible plane that will fave the camera at the scene position(its origin)
-    plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
-    raycaster.setFromCamera(mouse, camera);
-
-    //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
-    raycaster.ray.intersectPlane(plane, intersectionPoint);
-
-    //e.shiftKey returns true when shift is held
-    if (e.shiftKey) {
-
-        // let envmaploader = new THREE.PMREMGenerator(renderer);
+  //e.shiftKey returns true when shift is held
+  if(e.shiftKey){ 
+  
+     // let envmaploader = new THREE.PMREMGenerator(renderer);
 
         // new RGBELoader().load('cayley_interior_4k.hdr', function (hdrmap) {
         //     let envmap = envmaploader.fromCubemap(hdrmap);
@@ -151,18 +193,35 @@ document.addEventListener('click', (e) => {
             fog: true,
             // envMap: envmap.texture
         };
-
-        // Sets new Mesh at the mouse cursor location
-        const testSphere = new THREE.Mesh(new THREE.SphereGeometry(0.100, 30, 30), new THREE.MeshPhysicalMaterial(ballMaterial));
+        
+    switch (shapeSelector.shape) {
+      case "box":
+        const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshPhysicalMaterial(ballMaterial) );
+        scene.add(testBox);
+        testBox.position.copy(intersectionPoint)
+        break;
+      case "cone":
+        const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
+        scene.add(testCone);
+        testCone.position.copy(intersectionPoint);
+        break;
+      case "cylinder":
+        const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshPhysicalMaterial(ballMaterial) );
+        scene.add(testCylinder);
+        testCylinder.position.copy(intersectionPoint);
+        break;
+      case "torus":
+        const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshPhysicalMaterial(ballMaterial) );
+        scene.add(testTorus);
+        testTorus.position.copy(intersectionPoint)
+        break;
+      case "sphere":
+        //Sets new Mesh at the mouse cursor location
+        const testSphere = new THREE.Mesh( new THREE.SphereGeometry(0.125,30,30) , new THREE.MeshPhysicalMaterial( ballMaterial ) );
         scene.add(testSphere);
-
-        testSphere.position.copy(intersectionPoint);
-        // });
-
-
-        // ballMesh.position.copy(intersectionPoint);
-        // testSphere.position.copy(intersectionPoint);
+        testSphere.position.copy(intersectionPoint);        
     }
+  }
 })
 
 animate()
