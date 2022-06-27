@@ -143,7 +143,7 @@ function animate() {
                 particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
                 particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
         
-            }
+            }console.log("test");
         }
     }
   
@@ -230,27 +230,32 @@ document.addEventListener('click', (e) => {
         const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testBox);
         testBox.position.copy(intersectionPoint)
+        meshArray.push(testBox);
         break;
       case "cone":
         const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCone);
         testCone.position.copy(intersectionPoint);
+        meshArray.push(testCone);
         break;
       case "cylinder":
         const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCylinder);
         testCylinder.position.copy(intersectionPoint);
+        meshArray.push(testCylinder);
         break;
       case "torus":
         const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testTorus);
         testTorus.position.copy(intersectionPoint)
+        meshArray.push(testTorus);
         break;
       case "sphere":
         //Sets new Mesh at the mouse cursor location
         const testSphere = new THREE.Mesh( new THREE.SphereGeometry(0.125,30,30) , new THREE.MeshPhysicalMaterial( ballMaterial ) );
         scene.add(testSphere);
-        testSphere.position.copy(intersectionPoint);        
+        testSphere.position.copy(intersectionPoint);    
+        meshArray.push(testSphere);    
     }
 
   }
