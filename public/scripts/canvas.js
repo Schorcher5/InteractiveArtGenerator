@@ -9,6 +9,8 @@ import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 
 
 const meshArray = [];
+let drawLine = false;
+let numberOfDraws = 0;
 
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
@@ -81,6 +83,21 @@ function animate() {
             
         });
     }
+    for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
+        if(drawLine){
+            const waveModifier = Math.random();
+            for(var i = 0; i<4; i++){
+                const particle = new THREE.Points(new THREE.SphereGeometry(0.005,1,1), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*100}));
+               
+                scene.add(particle);
+                particle.position.copy(intersectionPoint);
+                particle.position.z = particle.position.z + 1 * waveModifier * (i >= 2 ? -1:1) *0.09;
+                particle.position.x = particle.position.x + 1 * waveModifier * (i < 2 ? -1:1) * 0.09;
+        
+            }
+        }
+    }
+  
     render()
     stats.update()
     
@@ -139,20 +156,13 @@ document.addEventListener('click', (e) => {
       meshArray.push(testSphere);
       
   }
-  if(e.ctrlKey ){
-    const waveModifier = Math.random();
-    for(var i = 0; i<4; i++){
-        const particle = new THREE.Points(new THREE.SphereGeometry(0.005,5,5), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*5000}));
-       
-        scene.add(particle);
-        particle.position.copy(intersectionPoint);
-        particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >=2 ? -1:1) *0.1;
-        particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i >=2 ? -1:1) * 0.1;
-        console.log( Math.cos((i%2)*Math.PI/2));
-        console.log( Math.pow(-1,i));
-        console.log( Math.sin((i%2)*Math.PI/2));
-    }
+  if(e.ctrlKey && !drawLine ){
+    drawLine = true;
+  }else if (e.ctrlKey && drawLine){
+    drawLine = false;
   }
+  
+  numberOfDraws = 0;
 })
 
 const axis = new THREE.AxesHelper(50);
