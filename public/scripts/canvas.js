@@ -70,15 +70,20 @@ cameraFolder.open()
 function animate() {
 
     requestAnimationFrame(animate)
-    meshArray.forEach((mesh) => {
+    const rotation = document.getElementById('rotation');
+    if (rotation.checked){
+        meshArray.forEach((mesh) => {
         
-        mesh.rotation.x += 0.01
-        mesh.rotation.y += 0.01
-        controls.update()
-        //make sure to always re-render and update the fps counter at the end of an animation
-        render()
-        stats.update()
-    });
+            mesh.rotation.x += 0.01
+            mesh.rotation.y += 0.01
+            controls.update()
+            //make sure to always re-render and update the fps counter at the end of an animation
+            
+        });
+    }
+    render()
+    stats.update()
+    
 
 }
 
@@ -132,8 +137,26 @@ document.addEventListener('click', (e) => {
       scene.add(testSphere);
       testSphere.position.copy(intersectionPoint);
       meshArray.push(testSphere);
+      
+  }
+  if(e.ctrlKey ){
+    const waveModifier = Math.random();
+    for(var i = 0; i<4; i++){
+        const particle = new THREE.Points(new THREE.SphereGeometry(0.005,5,5), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*5000}));
+       
+        scene.add(particle);
+        particle.position.copy(intersectionPoint);
+        particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >=2 ? -1:1) *0.1;
+        particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i >=2 ? -1:1) * 0.1;
+        console.log( Math.cos((i%2)*Math.PI/2));
+        console.log( Math.pow(-1,i));
+        console.log( Math.sin((i%2)*Math.PI/2));
+    }
   }
 })
+
+const axis = new THREE.AxesHelper(50);
+scene.add(axis);
 
 
 animate()
