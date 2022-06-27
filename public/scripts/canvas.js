@@ -8,6 +8,9 @@ import { RGBELoader } from '/jsm/loaders/RGBELoader.js'
 import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
+import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
+
+
 import { AmbientLight, Light, RectAreaLight } from 'three'
 
 const meshArray = [];
@@ -25,15 +28,33 @@ scene.add(light)
 
 
 
+// grid
+var gridHelper = new THREE.GridHelper( 10, 10 );
+scene.add( gridHelper );
+
 //Sets up our render engine/library and adds it to the dom
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight)
 document.body.appendChild(renderer.domElement)
 
+// new
+window.addEventListener( 'mousemove', onMouseMove, false );
+
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
 camera.position.z = 2;
+
 //Makes camera movable when holding the mouse button and dragging
 const controls = new OrbitControls(camera, renderer.domElement)
+
+// new
+
+const dragControls = new DragControls( meshArray, camera, renderer.domElement );
+		dragControls.addEventListener( 'dragstart', function () { controls.enabled = false; } );
+    dragControls.addEventListener( 'drag', onDragEvent );
+		dragControls.addEventListener( 'dragend', function () { controls.enabled = true; } );
+        
+
 
 //Sets up and adds a basic shape which is known as a mesh in three.js by passing
 //a geometry and material object to the mesh constructor
@@ -58,6 +79,7 @@ window.addEventListener(
     },
     false
 )
+
 
 //Sets up an fps counter at the top left
 const stats = Stats()
@@ -177,6 +199,7 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+
 // const pointlight = new THREE.PointLight(0xffffff, 1);
 // camera.position.set(200, 200, 200);
 // scene.add(pointlight);
@@ -184,6 +207,7 @@ const raycaster = new THREE.Raycaster();
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
+  dragged = false;
 
   // Sets current mouse position as the vector points of the mouse object
   mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
@@ -267,5 +291,27 @@ document.addEventListener('click', (e) => {
   
   numberOfDraws = 0;
 }})
+
+
+function onMouseMove(e) {
+    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  }
+
+
+function onDragEvent(e) {
+
+    raycaster.setFromCamera(mouse, camera);
+    raycaster.ray.intersectPlane(plane, intersects);
+    e.object.position.set(intersects.x, intersects.y, intersects.z);
+    
+    
+  }
+
+
+// examples
+// https://jsfiddle.net/amitlzkpa/c53w8erf/
+// https://jsfiddle.net/xa9uscme/1/
+
 
 animate()
