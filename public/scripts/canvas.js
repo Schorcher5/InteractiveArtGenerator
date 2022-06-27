@@ -10,6 +10,10 @@ import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { AmbientLight, Light, RectAreaLight } from 'three'
 
+const meshArray = [];
+let drawLine = false;
+let numberOfDraws = 0;
+
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
 
@@ -41,6 +45,7 @@ const material = new THREE.MeshStandardMaterial({
 })
 const cube = new THREE.Mesh(geometry, material)
 scene.add(cube)
+meshArray.push(cube);
 
 // Method to handle viewport changes by automatically changing camera dimensions and re-rendering
 window.addEventListener(
@@ -114,13 +119,38 @@ LightFolder.open()
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
 function animate() {
+
     requestAnimationFrame(animate)
-    cube.rotation.x += 0.01
-    cube.rotation.y += 0.01
-    controls.update()
-    //make sure to always re-render and update the fps counter at the end of an animation
+    const rotation = document.getElementById('rotation');
+    if (rotation.checked){
+        meshArray.forEach((mesh) => {
+        
+            mesh.rotation.x += 0.01
+            mesh.rotation.y += 0.01
+            controls.update()
+            //make sure to always re-render and update the fps counter at the end of an animation
+            
+        });
+    }
+    for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
+        if(drawLine){
+            const waveModifier = Math.random();
+            for(var i = 0; i<4; i++){
+                const particle = new THREE.Points(new THREE.SphereGeometry(0.005,1,1), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*100}));
+               
+                scene.add(particle);
+                particle.position.copy(intersectionPoint);
+                particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
+                particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
+        
+            }
+        }
+    }
+  
     render()
     stats.update()
+    
+
 }
 
 //Here is where our scene and camera get loaded into the browser
@@ -170,6 +200,7 @@ document.addEventListener('click', (e) => {
   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
   //e.shiftKey returns true when shift is held
+
   if(e.shiftKey){ 
   
      // let envmaploader = new THREE.PMREMGenerator(renderer);
@@ -221,7 +252,15 @@ document.addEventListener('click', (e) => {
         scene.add(testSphere);
         testSphere.position.copy(intersectionPoint);        
     }
+
   }
+  
+  if(e.ctrlKey && !drawLine ){
+    drawLine = true;
+  }else if (e.ctrlKey && drawLine){
+    drawLine = false;
+  
+  numberOfDraws = 0;
 })
 
 animate()
