@@ -121,9 +121,13 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+
+var dragged = true;
+
 // Function to handle events preformed by mouse clicking
 
 document.addEventListener('click', (e) => {
+  dragged = false;
 
   // Sets current mouse position as the vector points of the mouse object
   mouse.x = (e.clientX/window.innerWidth) * 2 - 1;
@@ -160,10 +164,14 @@ function onMouseMove(e) {
 
 
 function onDragEvent(e) {
-    raycaster.setFromCamera(mouse, camera);
-    raycaster.ray.intersectPlane(plane, intersects);
-    e.object.position.set(intersects.x, intersects.y, intersects.z);
+    if (dragged) {
+      raycaster.setFromCamera(mouse, camera);
+      raycaster.ray.intersectPlane(plane, intersects);
+      e.object.position.set(intersects.x, intersects.y, intersects.z);
+    }
+    
   }
+
 
 // examples
 // https://jsfiddle.net/amitlzkpa/c53w8erf/
