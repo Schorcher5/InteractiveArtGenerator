@@ -9,7 +9,7 @@ import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
-
+import { AfterimagePass } from '/jsm/postprocessing/AfterimagePass.js'
 
 import { AmbientLight, Light, RectAreaLight } from 'three'
 
