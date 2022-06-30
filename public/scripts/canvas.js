@@ -10,7 +10,9 @@ import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
 import { AfterimagePass } from '/jsm/postprocessing/AfterimagePass.js'
-
+import { EffectComposer } from '/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from '/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from '/jsm/postprocessing/UnrealBloomPass.js'
 import { AmbientLight, Light, RectAreaLight } from 'three'
 
 const meshArray = [];
@@ -28,10 +30,6 @@ scene.add(light)
 
 
 
-// grid
-var gridHelper = new THREE.GridHelper( 10, 10 );
-scene.add( gridHelper );
-
 //Sets up our render engine/library and adds it to the dom
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -46,6 +44,22 @@ camera.position.z = 2;
 
 //Makes camera movable when holding the mouse button and dragging
 const controls = new OrbitControls(camera, renderer.domElement)
+
+//Setting up the post processing
+
+
+
+const trailingEffect = new AfterimagePass();
+trailingEffect.uniforms["damp"].value = 0.98079;
+
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 3, 1, 0.5);
+
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(trailingEffect);
+composer.addPass(bloomPass);
+
 
 // new
 
@@ -177,7 +191,7 @@ function animate() {
 
 //Here is where our scene and camera get loaded into the browser
 function render() {
-    renderer.render(scene, camera)
+    composer.render(scene, camera)
 }
 
 // To create an object at the coordinates of the cursor,
