@@ -3,12 +3,12 @@
 // the server doesn't send the whole project to the browser, only what files are listed in static/header
 
 import * as THREE from 'three'
+import { World } from 'cannon-es'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
-import { RGBELoader } from '/jsm/loaders/RGBELoader.js'
-import { FlakesTexture } from '/jsm/textures/FlakesTexture.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
 import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/jsm/controls/DragControls.js";
+
 
 
 import { AmbientLight, Light, RectAreaLight } from 'three'
@@ -24,9 +24,6 @@ const scene = new THREE.Scene()
 const light = new THREE.PointLight(0xfdd8fc, 1)
 light.position.set(0, 0, 50)
 scene.add(light)
-
-
-
 
 // grid
 var gridHelper = new THREE.GridHelper( 10, 10 );
@@ -168,11 +165,8 @@ function animate() {
             }console.log(drawLine);
         }
     }
-  
     render()
     stats.update()
-    
-
 }
 
 //Here is where our scene and camera get loaded into the browser
@@ -198,12 +192,6 @@ const planeNormal = new THREE.Vector3();
 const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
-
-
-// const pointlight = new THREE.PointLight(0xffffff, 1);
-// camera.position.set(200, 200, 200);
-// scene.add(pointlight);
-
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
@@ -311,6 +299,5 @@ function onDragEvent(e) {
 // examples
 // https://jsfiddle.net/amitlzkpa/c53w8erf/
 // https://jsfiddle.net/xa9uscme/1/
-
 
 animate()
