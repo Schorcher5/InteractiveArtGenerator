@@ -3,7 +3,7 @@
 // the server doesn't send the whole project to the browser, only what files are listed in static/header
 
 import * as THREE from 'three'
-import { World } from 'cannon-es'
+import * as CANNON from 'cannon-es'
 import { OrbitControls } from '/jsm/controls/OrbitControls.js'
 import Stats from '/jsm/libs/stats.module.js'
 import { GUI } from '/jsm/libs/lil-gui.module.min.js'
@@ -14,6 +14,7 @@ import { DragControls } from "https://cdn.jsdelivr.net/npm/three@0.114/examples/
 import { AmbientLight, Light, RectAreaLight } from 'three'
 
 const meshArray = [];
+const bodies = [];
 let drawLine = false;
 let numberOfDraws = 0;
 
@@ -192,6 +193,33 @@ const planeNormal = new THREE.Vector3();
 const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
+
+let world = new CANNON.World()
+world.gravity.set(0, -10, 0)
+
+// Floor
+const floorShape = new CANNON.Plane()
+const floorBody = new CANNON.Body({ mass: 0 })
+floorBody.addShape(floorShape)
+floorBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
+world.addBody(floorBody)
+
+// Cube body
+const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+let cubeBody = new CANNON.Body({ mass: 5 })
+cubeBody.addShape(cubeShape)
+cubeBody.position.set(0, 5, 0)
+bodies.push(cubeBody)
+world.addBody(cubeBody)
+
+// Joint body, to later constraint the cube
+const jointShape = new CANNON.Sphere(0.1)
+let jointBody = new CANNON.Body({ mass: 0 })
+jointBody.addShape(jointShape)
+jointBody.collisionFilterGroup = 0
+jointBody.collisionFilterMask = 0
+world.addBody(jointBody)
+
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
