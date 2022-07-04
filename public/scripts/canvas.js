@@ -57,7 +57,7 @@ const dragControls = new DragControls( meshArray, camera, renderer.domElement );
 //Sets up and adds a basic shape which is known as a mesh in three.js by passing
 //a geometry and material object to the mesh constructor
 // Note that geometry and material should be made in the mesh constructor and not stored as separate objects
-const geometry = new THREE.BoxGeometry()
+const geometry = new THREE.BoxGeometry(1,1,1)
 const material = new THREE.MeshStandardMaterial({
     color: 	0xfff7e2,
     wireframe: false,
@@ -136,12 +136,46 @@ LightFolder.add(lightRect, 'intensity', 0, 10).name('Rect Intensity')
 LightFolder.addColor(lightRect, 'color').name('Rect Color')
 LightFolder.open()
 
+  let world = new CANNON.World()
+  world.gravity.set(0, -5, 0)
+  
+  // Floor
+  const floorShape = new CANNON.Plane()
+  const floorBody = new CANNON.Body({ mass: 0 })
+  floorBody.addShape(floorShape)
+  floorBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
+  world.addBody(floorBody)
+  
+  // Cube body
+  const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+  let cubeBody = new CANNON.Body({ mass: 5 })
+  cubeBody.addShape(cubeShape)
+  cubeBody.position.set(0, 5, 0)
+  bodies.push(cubeBody)
+  world.addBody(cubeBody)
+  
+  // Joint body, to later constraint the cube
+  const jointShape = new CANNON.Sphere(0.1)
+  let jointBody = new CANNON.Body({ mass: 0 })
+  jointBody.addShape(jointShape)
+  jointBody.collisionFilterGroup = 0
+  jointBody.collisionFilterMask = 0
+  world.addBody(jointBody)
+
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
 function animate() {
 
     requestAnimationFrame(animate)
     const rotation = document.getElementById('rotation');
+    world.fixedStep()
+
+    for(let i = 0; i != meshArray.length; i++) {
+      meshArray[i].position.copy(bodies[i].position)
+      meshArray[i].quaternion.copy(bodies[i].quaternion)
+    }
+
+
     if (rotation.checked){
         meshArray.forEach((mesh) => {
         
@@ -194,32 +228,6 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
-let world = new CANNON.World()
-world.gravity.set(0, -10, 0)
-
-// Floor
-const floorShape = new CANNON.Plane()
-const floorBody = new CANNON.Body({ mass: 0 })
-floorBody.addShape(floorShape)
-floorBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
-world.addBody(floorBody)
-
-// Cube body
-const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
-let cubeBody = new CANNON.Body({ mass: 5 })
-cubeBody.addShape(cubeShape)
-cubeBody.position.set(0, 5, 0)
-bodies.push(cubeBody)
-world.addBody(cubeBody)
-
-// Joint body, to later constraint the cube
-const jointShape = new CANNON.Sphere(0.1)
-let jointBody = new CANNON.Body({ mass: 0 })
-jointBody.addShape(jointShape)
-jointBody.collisionFilterGroup = 0
-jointBody.collisionFilterMask = 0
-world.addBody(jointBody)
-
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
@@ -266,10 +274,26 @@ document.addEventListener('click', (e) => {
         
     switch (shapeSelector.shape) {
       case "box":
-        const testBox = new THREE.Mesh( new THREE.BoxGeometry(.5,.5,.5), new THREE.MeshPhysicalMaterial(ballMaterial) );
+        const testBox = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testBox);
         testBox.position.copy(intersectionPoint)
         meshArray.push(testBox);
+
+        // Cube body
+        const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+        let cubeBody = new CANNON.Body({ mass: 5 })
+        cubeBody.addShape(cubeShape)
+        cubeBody.position.set(0, 5, 0)
+        bodies.push(cubeBody)
+        world.addBody(cubeBody)
+
+        // Joint body, to later constraint the cube
+        const jointShape = new CANNON.Sphere(0.1)
+        let jointBody = new CANNON.Body({ mass: 0 })
+        jointBody.addShape(jointShape)
+        jointBody.collisionFilterGroup = 0
+        jointBody.collisionFilterMask = 0
+        world.addBody(jointBody)
         break;
       case "cone":
         const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
