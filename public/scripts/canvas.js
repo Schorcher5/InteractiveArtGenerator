@@ -136,31 +136,31 @@ LightFolder.add(lightRect, 'intensity', 0, 10).name('Rect Intensity')
 LightFolder.addColor(lightRect, 'color').name('Rect Color')
 LightFolder.open()
 
-  let world = new CANNON.World()
-  world.gravity.set(0, -5, 0)
-  
-  // Floor
-  const floorShape = new CANNON.Plane()
-  const floorBody = new CANNON.Body({ mass: 0 })
-  floorBody.addShape(floorShape)
-  floorBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
-  world.addBody(floorBody)
-  
-  // Cube body
-  const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
-  let cubeBody = new CANNON.Body({ mass: 5 })
-  cubeBody.addShape(cubeShape)
-  cubeBody.position.set(0, 5, 0)
-  bodies.push(cubeBody)
-  world.addBody(cubeBody)
-  
-  // Joint body, to later constraint the cube
-  const jointShape = new CANNON.Sphere(0.1)
-  let jointBody = new CANNON.Body({ mass: 0 })
-  jointBody.addShape(jointShape)
-  jointBody.collisionFilterGroup = 0
-  jointBody.collisionFilterMask = 0
-  world.addBody(jointBody)
+let world = new CANNON.World()
+world.gravity.set(0, -5, 0)
+
+// Floor
+const floorShape = new CANNON.Plane()
+const floorBody = new CANNON.Body({ mass: 0 })
+floorBody.addShape(floorShape)
+floorBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
+world.addBody(floorBody)
+
+// Cube body
+const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
+let cubeBody = new CANNON.Body({ mass: 5 })
+cubeBody.addShape(cubeShape)
+cubeBody.position.set(0, 5, 0)
+bodies.push(cubeBody)
+world.addBody(cubeBody)
+
+// Joint body, to later constraint the cube
+const jointShape = new CANNON.Sphere(0.1)
+let jointBody = new CANNON.Body({ mass: 0 })
+jointBody.addShape(jointShape)
+jointBody.collisionFilterGroup = 0
+jointBody.collisionFilterMask = 0
+world.addBody(jointBody)
 
 //This function is special as it will continually run throughout the life of the server,
 //looping through all its code allowing for basic animations through changing mesh parameters
@@ -228,6 +228,18 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+  //e.shiftKey returns true when shift is held
+const ballMaterial = {
+  color: new THREE.Color(0xfdd8fc),
+  emissive: new THREE.Color(0x000000),
+  roughness: 0.466,
+  metalness: 0.1,
+  reflectivity: 0.288,
+  clearcoat: 0.86,
+  clearcoatRoughness: 0.39,
+  fog: true,
+  // envMap: envmap.texture
+};
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
@@ -245,19 +257,6 @@ document.addEventListener('click', (e) => {
   
   //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
   raycaster.ray.intersectPlane(plane, intersectionPoint);
-
-  //e.shiftKey returns true when shift is held
-  const ballMaterial = {
-    color: new THREE.Color(0xfdd8fc),
-    emissive: new THREE.Color(0x000000),
-    roughness: 0.466,
-    metalness: 0.1,
-    reflectivity: 0.288,
-    clearcoat: 0.86,
-    clearcoatRoughness: 0.39,
-    fog: true,
-    // envMap: envmap.texture
-};
 
   if(e.shiftKey){ 
         
@@ -336,7 +335,6 @@ document.addEventListener('click', (e) => {
   numberOfDraws = 0;
 }})
 
-
 function onMouseMove(e) {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -344,12 +342,9 @@ function onMouseMove(e) {
 
 
 function onDragEvent(e) {
-
     raycaster.setFromCamera(mouse, camera);
     raycaster.ray.intersectPlane(plane, intersectionPoint);
     e.object.position.set(intersectionPoint.x, intersectionPoint.y, intersectionPoint.z);
-    
-    
   }
 
 
