@@ -283,18 +283,10 @@ document.addEventListener('click', (e) => {
         const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
         let cubeBody = new CANNON.Body({ mass: 5 })
         cubeBody.addShape(cubeShape)
-        cubeBody.position.set(0, 5, 0)
+        cubeBody.position.set(testBox.position.x, testBox.position.y, testBox.position.z )
         bodies.push(cubeBody)
         world.addBody(cubeBody)
 
-        // Joint body, to later constraint the cube
-        const jointShape = new CANNON.Sphere(0.1)
-        let jointBody = new CANNON.Body({ mass: 0 })
-        jointBody.addShape(jointShape)
-        jointBody.collisionFilterGroup = 0
-        jointBody.collisionFilterMask = 0
-        world.addBody(jointBody)
-        break;
       case "cone":
         const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCone);
