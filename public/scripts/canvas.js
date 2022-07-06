@@ -247,30 +247,19 @@ document.addEventListener('click', (e) => {
   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
   //e.shiftKey returns true when shift is held
+  const ballMaterial = {
+    color: new THREE.Color(0xfdd8fc),
+    emissive: new THREE.Color(0x000000),
+    roughness: 0.466,
+    metalness: 0.1,
+    reflectivity: 0.288,
+    clearcoat: 0.86,
+    clearcoatRoughness: 0.39,
+    fog: true,
+    // envMap: envmap.texture
+};
 
   if(e.shiftKey){ 
-  
-     // let envmaploader = new THREE.PMREMGenerator(renderer);
-
-        // new RGBELoader().load('cayley_interior_4k.hdr', function (hdrmap) {
-        //     let envmap = envmaploader.fromCubemap(hdrmap);
-        //     let texture = new THREE.CanvasTexture(new FlakesTexture());
-        //     texture.wrapS = THREE.RepeatWrapping;
-        //     texture.wrapT = THREE.RepeatWrapping;
-        //     texture.repeat.x = 10;
-        //     texture.repeat.y = 6;
-
-        const ballMaterial = {
-            color: new THREE.Color(0xfdd8fc),
-            emissive: new THREE.Color(0x000000),
-            roughness: 0.466,
-            metalness: 0.1,
-            reflectivity: 0.288,
-            clearcoat: 0.86,
-            clearcoatRoughness: 0.39,
-            fog: true,
-            // envMap: envmap.texture
-        };
         
     switch (shapeSelector.shape) {
       case "box":
@@ -286,18 +275,34 @@ document.addEventListener('click', (e) => {
         cubeBody.position.set(testBox.position.x, testBox.position.y, testBox.position.z )
         bodies.push(cubeBody)
         world.addBody(cubeBody)
-
+        break;
       case "cone":
         const testCone = new THREE.Mesh( new THREE.ConeGeometry(.5,1.5,30), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCone);
         testCone.position.copy(intersectionPoint);
         meshArray.push(testCone);
+
+        // "Cone" body
+        const CylinderShape = new CANNON.Cylinder(0.0, 0.5, 1.5, 30)
+        let CylinderBody = new CANNON.Body({ mass: 5 })
+        CylinderBody.addShape(CylinderShape)
+        CylinderBody.position.set(testCone.position.x, testCone.position.y, testCone.position.z )
+        bodies.push(CylinderBody)
+        world.addBody(CylinderBody)
         break;
       case "cylinder":
         const testCylinder = new THREE.Mesh( new THREE.CylinderGeometry( .5, .5, 1, 32 ), new THREE.MeshPhysicalMaterial(ballMaterial) );
         scene.add(testCylinder);
         testCylinder.position.copy(intersectionPoint);
         meshArray.push(testCylinder);
+
+        // "Cone" body
+        const CylinderShapeReal = new CANNON.Cylinder(0.5, 0.5, 1.5, 32)
+        let CylinderBodyReal = new CANNON.Body({ mass: 5 })
+        CylinderBodyReal.addShape(CylinderShapeReal)
+        CylinderBodyReal.position.set(testCylinder.position.x, testCylinder.position.y, testCylinder.position.z )
+        bodies.push(CylinderBodyReal)
+        world.addBody(CylinderBodyReal)
         break;
       case "torus":
         const testTorus = new THREE.Mesh(new THREE.TorusGeometry( 2, .2, 100, 100 ) , new THREE.MeshPhysicalMaterial(ballMaterial) );
@@ -311,6 +316,14 @@ document.addEventListener('click', (e) => {
         scene.add(testSphere);
         testSphere.position.copy(intersectionPoint);    
         meshArray.push(testSphere);    
+
+        // "Cone" body
+        const sphereShape = new CANNON.Sphere(0.125)
+        let sphereBody = new CANNON.Body({ mass: 5 })
+        sphereBody.addShape(sphereShape)
+        sphereBody.position.set(testSphere.position.x, testSphere.position.y, testSphere.position.z )
+        bodies.push(sphereBody)
+        world.addBody(sphereBody)
     }
 
   }
