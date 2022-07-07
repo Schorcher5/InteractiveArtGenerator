@@ -50,9 +50,6 @@ scene.add(light)
 
 
 
-// grid
-var gridHelper = new THREE.GridHelper(10, 10);
-scene.add(gridHelper);
 
 
 //Sets up our render engine/library and adds it to the dom
