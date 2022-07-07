@@ -17,6 +17,9 @@ const meshArray = [];
 const bodies = [];
 let drawLine = false;
 let numberOfDraws = 0;
+let valGav = false
+let tickGavY = 0
+let tickGavX = 0
 
 //Creates a scene, where we can load shapes onto
 const scene = new THREE.Scene()
@@ -137,7 +140,7 @@ LightFolder.addColor(lightRect, 'color').name('Rect Color')
 LightFolder.open()
 
 let world = new CANNON.World()
-world.gravity.set(0, -5, 0)
+world.gravity.set(0, -7, 0)
 
 // Floor
 const floorShape = new CANNON.Plane()
@@ -166,42 +169,51 @@ world.addBody(jointBody)
 //looping through all its code allowing for basic animations through changing mesh parameters
 function animate() {
 
-    requestAnimationFrame(animate)
-    const rotation = document.getElementById('rotation');
-    world.fixedStep()
+  requestAnimationFrame(animate)
+  const rotation = document.getElementById('rotation');
+  world.fixedStep()
 
-    for(let i = 0; i != meshArray.length; i++) {
-      meshArray[i].position.copy(bodies[i].position)
-      meshArray[i].quaternion.copy(bodies[i].quaternion)
-    }
+  for(let i = 0; i != meshArray.length; i++) {
+    meshArray[i].position.copy(bodies[i].position)
+    meshArray[i].quaternion.copy(bodies[i].quaternion)
+  }
 
-
-    if (rotation.checked){
-        meshArray.forEach((mesh) => {
+  
+  if (rotation.checked){
+    console.log("X: " + mouse.x + "    Y:" + mouse.y)
+    world.gravity.set(mouse.x * 100 * Math.sin(tickGavY), mouse.y * 100 * Math.sin(tickGavY), 0)
+    tickGavY =+ 0.01
+    console.log(world.gravity.y)
+    
+    meshArray.forEach((mesh) => {
+      mesh.rotation.x += 0.01
+      mesh.rotation.y += 0.01
+      controls.update()
+      //make sure to always re-render and update the fps counter at the end of an animation
         
-            mesh.rotation.x += 0.01
-            mesh.rotation.y += 0.01
-            controls.update()
-            //make sure to always re-render and update the fps counter at the end of an animation
-            
-        });
-    }
-    if(drawLine){
-      for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
-            const waveModifier = Math.random();
-            for(var i = 0; i<4; i++){
-                const particle = new THREE.Points(new THREE.SphereGeometry(0.005,1,1), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*100}));
-               
-                scene.add(particle);
-                particle.position.copy(intersectionPoint);
-                particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
-                particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
-        
-            }console.log(drawLine);
-        }
-    }
-    render()
-    stats.update()
+    });
+  }
+  else {
+    tickGavY = 0
+    world.gravity.set(0, -7, 0)
+  }
+
+  if(drawLine){
+    for(numberOfDraws; numberOfDraws<10; numberOfDraws++){
+          const waveModifier = Math.random();
+          for(var i = 0; i<4; i++){
+              const particle = new THREE.Points(new THREE.SphereGeometry(0.005,1,1), new THREE.PointsMaterial({size:0.005, color:0X18978F+i*100}));
+             
+              scene.add(particle);
+              particle.position.copy(intersectionPoint);
+              particle.position.z = particle.position.z + Math.cos((i%2)*Math.PI/2) * waveModifier * (i >= 2 ? -1:1) *0.09;
+              particle.position.x = particle.position.x + Math.sin((i%2)*Math.PI/2) * waveModifier * (i < 2 ? -1:1) * 0.09;
+      
+          }console.log(drawLine);
+      }
+  }
+  render()
+  stats.update()
 }
 
 //Here is where our scene and camera get loaded into the browser
@@ -257,6 +269,11 @@ document.addEventListener('click', (e) => {
   
   //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
   raycaster.ray.intersectPlane(plane, intersectionPoint);
+
+
+  if(e.ctrlKey){
+    valGav = true
+  } else { valGav = false}
 
   if(e.shiftKey){ 
         
