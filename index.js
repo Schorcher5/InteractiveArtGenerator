@@ -10,6 +10,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Sets relative paths to retrieve certain files from the node_modules folder
 app.use('/build/', express.static(path.join(__dirname, 'node_modules/three/build')));
+app.use('/cannon/', express.static(path.join(__dirname, 'node_modules/cannon-es')));
 app.use('/jsm/', express.static(path.join(__dirname, 'node_modules/three/examples/jsm')));
 
 
