@@ -44,6 +44,18 @@ const plane = new THREE.Plane();
 
 const raycaster = new THREE.Raycaster();
 
+const ballMaterial = {
+  color: new THREE.Color(0xfdd8fc),
+  emissive: new THREE.Color(0x000000),
+  roughness: 0.466,
+  metalness: 0.1,
+  reflectivity: 0.288,
+  clearcoat: 0.86,
+  clearcoatRoughness: 0.39,
+  fog: true,
+  // envMap: envmap.texture
+};
+
 const light = new THREE.PointLight(0xfdd8fc, 1)
 light.position.set(0, 0, 50)
 scene.add(light)
@@ -150,19 +162,6 @@ shapeSelectorFolder.add(shapeSelector, 'shape', {
     Sphere: "sphere"
 })
     .name("shape?")
-
-const ballMaterial = {
-    color: new THREE.Color(0xfdd8fc),
-    emissive: new THREE.Color(0x000000),
-    roughness: 0.466,
-    metalness: 0.1,
-    reflectivity: 0.288,
-    clearcoat: 0.86,
-    clearcoatRoughness: 0.39,
-    fog: true,
-    // envMap: envmap.texture
-};
-
 // select color 
 var selected = cube;
 var guiControls = new function () {
@@ -277,7 +276,6 @@ function animate() {
             const waveModifier = Math.random();
             for (var i = 0; i < 4; i++) {
                 const particle = new THREE.Points(new THREE.SphereGeometry(0.005, 1, 1), new THREE.PointsMaterial({ size: 0.005, color: 0X18978F + i * 100 }));
-
                 scene.add(particle);
                 particle.position.copy(intersectionPoint);
                 particle.position.z = particle.position.z + Math.cos((i % 2) * Math.PI / 2) * waveModifier * (i >= 2 ? -1 : 1) * 0.09;
@@ -314,58 +312,23 @@ function render() {
     composer.render(scene, camera)
 }
 
-// // To create an object at the coordinates of the cursor,
-// // we set up an invisible plane at the at the coordinates of the cursor
-// // and then use the raycaster class to get the intersection point that we can then pass
-// // to another function/object as a position  
-
-// //This mouse object will contain two values, an x and a y value
-// const mouse = new THREE.Vector2();
-
-// //This object will contain the coordinates for the intersection between the raycaster and the  plane
-// const intersectionPoint = new THREE.Vector3();
-
-// //This object will set the direction our invisible plane will be facing
-// const planeNormal = new THREE.Vector3();
-
-// //This object will be our invisible plane
-// const plane = new THREE.Plane();
-
-// const raycaster = new THREE.Raycaster();
-
-  //e.shiftKey returns true when shift is held
-const ballMaterial = {
-  color: new THREE.Color(0xfdd8fc),
-  emissive: new THREE.Color(0x000000),
-  roughness: 0.466,
-  metalness: 0.1,
-  reflectivity: 0.288,
-  clearcoat: 0.86,
-  clearcoatRoughness: 0.39,
-  fog: true,
-  // envMap: envmap.texture
-};
 
 // Function to handle events preformed by mouse clicking
 document.addEventListener('click', (e) => {
 
-    // Sets current mouse position as the vector points of the mouse object
-    mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  // Sets current mouse position as the vector points of the mouse object
+  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
     //sets up the direction of the plane
-    planeNormal.copy(camera.position).normalize();
+  planeNormal.copy(camera.position).normalize();
 
-    //Sets up our invisible plane that will fave the camera at the scene position(its origin)
-    plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
-    raycaster.setFromCamera(mouse, camera);
+  //Sets up our invisible plane that will fave the camera at the scene position(its origin)
+  plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+  raycaster.setFromCamera(mouse, camera);
 
-    //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
-    raycaster.ray.intersectPlane(plane, intersectionPoint);
-
-  if(e.ctrlKey){
-    valGav = true
-  } else { valGav = false}
+  //Gets the intersection coordinates between the raycaster and the plane and passes those values to intersectionPoint
+  raycaster.ray.intersectPlane(plane, intersectionPoint);
 
   if(e.shiftKey){ 
         
@@ -432,7 +395,7 @@ document.addEventListener('click', (e) => {
         sphereBody.position.set(testSphere.position.x, testSphere.position.y, testSphere.position.z )
         bodies.push(sphereBody)
         world.addBody(sphereBody)
-    }
+    
 
     if (e.ctrlKey && !drawLine) {
         drawLine = true;
@@ -441,7 +404,12 @@ document.addEventListener('click', (e) => {
 
         numberOfDraws = 0;
     }
+  }
+}
 })
+
+
+
 
 function onMouseMove(e) {
     mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
